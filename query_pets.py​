@@ -1,3 +1,65 @@
+import sqlite3 as lite
+
+
+def pet_query():
+
+    user_id = ""
+
+    while user_id != -1:
+        user_id = input("Enter a user ID, or type -1 to terminate the program:")
+
+        try:
+            user_id = int(user_id)
+        except:
+            print("User ID not found :()")
+            continue
+
+        connection = lite.connect('pets')
+        cursor = connection.cursor()
+
+        cursor.execute("INSERT INTO person VALUES (1, 'James', 'Smith', 41)")
+        cursor.execute("INSERT INTO person VALUES (2, 'Diana', 'Greene', 23)")
+        cursor.execute("INSERT INTO person VALUES (3, 'Sara', 'White', 27)")
+        cursor.execute("INSERT INTO person VALUES (4, 'William', 'Gibson', 23)")
+
+        cursor.execute("INSERT INTO pet VALUES (1, 'Rusty', 'Dalmation', 4, 1)")
+        cursor.execute("INSERT INTO pet VALUES (2, 'Bella','Alaskan Malamute', 3, 0)")
+        cursor.execute("INSERT INTO pet VALUES (3, 'Max', 'CockerSpaniel', 1, 0)")
+        cursor.execute("INSERT INTO pet VALUES (4, 'Rocky', 'Beagle', 7, 0)")
+        cursor.execute("INSERT INTO pet VALUES (5, 'Rufus', 'CockerSpaniel', 1, 0)")
+        cursor.execute("INSERT INTO pet VALUES (6, 'Spot', 'Bloodhound', 2, 1)")
+
+        cursor.execute("INSERT INTO person_pet VALUES (1, 1)")
+        cursor.execute("INSERT INTO person_pet VALUES (1, 2)")
+        cursor.execute("INSERT INTO person_pet VALUES (2, 3)")
+        cursor.execute("INSERT INTO person_pet VALUES (2, 4)")
+        cursor.execute("INSERT INTO person_pet VALUES (3, 5)")
+        cursor.execute("INSERT INTO person_pet VALUES (4, 6)")
+
+        cursor.execute(
+        f"""SELECT person.first_name,
+        person.last_name,
+        person.age,
+        pet.name,
+        pet.breed,
+        pet.age,
+        pet.dead
+        FROM person
+        LEFT JOIN person_pet ON person.id = person_pet.person_id
+        LEFT JOIN pet ON person_pet.pet_id = pet.id
+        WHERE person.id = {user_id}""")
+
+        results = cursor.fetchall()
+
+        try:
+            results[0]
+        except IndexError:
+            print("This user record does not exist")
+            continue
+
+        for row in results:
+            print(row)
+
 
 if __name__ == "__main__":
-    pass
+    pet_query()
